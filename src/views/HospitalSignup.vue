@@ -9,17 +9,18 @@
         />
       </div>
       <div class="col-md-6 col-12 form-container p-2  shadow ">
-        <form class=" p-md-3 w-100">
+        <form class=" p-md-3 w-100" @submit.prevent="registerHospital">
          <div class="d-md-flex align-items-center justify-content-evenly">
             <div>
              <div class="mb-3">
             <label for="username" class="form-label"
-              >User name</label
+              >Name</label
             >
             <input
               type="text"
               class="form-control"
-              id="username"
+              id="name"
+              v-model="registerForm.name"
             />
             
           </div>
@@ -31,6 +32,8 @@
               type="email"
               class="form-control"
               id="email"
+              v-model="registerForm.email"
+
             />
             
           </div>
@@ -44,6 +47,8 @@
               min="10"
               class="form-control"
               id="phone"
+              v-model="registerForm.phone"
+
             />
             
           </div>
@@ -55,6 +60,8 @@
               type="password"
               class="form-control"
               id="userPassword"
+              v-model="registerForm.password"
+
             />
           </div>
           </div>
@@ -69,6 +76,8 @@
               min="10"
               class="form-control"
               id="reg"
+              v-model="registerForm.registerNo"
+
             />
             
           </div>
@@ -76,7 +85,10 @@
             <label for="reg" class="form-label"
               >Address</label
             >
-            <textarea name="address" class="form-control" id="address" cols="10" rows="5"></textarea>
+            <textarea name="address" class="form-control" id="address" cols="10" rows="5" 
+              v-model="registerForm.address"
+
+            ></textarea>
             
           </div>
        
@@ -85,9 +97,10 @@
               >Confirm Password</label
             >
             <input
-              type="password"
+              type="text"
               class="form-control"
               id="confirmpassowrd"
+              v-model="registerForm.confirmPassword"
             />
           </div>
           </div>
@@ -98,19 +111,51 @@
              <router-link to="/hospital/login"><a  class="btn btn-outline-primary">Login</a></router-link>
          </div>
         </form>
+      <p class="mx-3 d-none text-danger" ref="registerError"></p>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import registerFormValidation from "../middleware/formvalidation/register"
+import {registerApi} from '../api/auth'
 export default {
     name:'Signup',
     data(){
         return {
-             signupCheck:'afasf'
+             registerForm:{
+               name:'',
+               email:'',
+               phone:'',
+               password:'',
+               registerNo:'',
+               address:'',
+               confirmPassword:'',
+             },
         }
+    },
+    methods:{
+       registerHospital(){
+         console.log(this.registerForm)
+         const { error } = registerFormValidation.validate(this.registerForm) 
+         if(error){
+           const messageElement = this.$refs.registerError
+           console.log(messageElement)
+            messageElement.innerText= error.message
+            messageElement.classList.remove('d-none')
+            setTimeout(()=>{
+              messageElement.classList.add('d-none')
+            },6000)
+
+         }else{
+           registerApi(this.registerForm).then((response)=>{
+             console.log(response)
+           })
+         }
+      }
     }
+
 };
 </script>
 
